@@ -6,4 +6,6 @@ import com.oliveiralucaspro.springmvcrest.domain.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
+    Category findByName(String name);
+
 }
