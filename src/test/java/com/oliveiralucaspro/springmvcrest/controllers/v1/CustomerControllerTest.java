@@ -51,12 +51,10 @@ class CustomerControllerTest {
     void testGetAllCustomers() throws Exception {
 	// given
 	CustomerDTO customerDTO1 = new CustomerDTO();
-	customerDTO1.setId(ID);
 	customerDTO1.setFirstName(FIRST_NAME);
 	customerDTO1.setLastName(LAST_NAME);
 
 	CustomerDTO customerDTO2 = new CustomerDTO();
-	customerDTO2.setId(2L);
 	customerDTO2.setFirstName("Serio");
 	customerDTO2.setLastName("Mariola");
 
@@ -68,16 +66,15 @@ class CustomerControllerTest {
     }
     
     @Test
-    void testGetCustomerByFirstName() throws Exception {
+    void testGetCustomerById() throws Exception {
 	// given
 	CustomerDTO customerDTO1 = new CustomerDTO();
-	customerDTO1.setId(ID);
 	customerDTO1.setFirstName(FIRST_NAME);
 	customerDTO1.setLastName(LAST_NAME);
 	
-	when(customerService.getCustomerByFirstName(anyString())).thenReturn(customerDTO1);
+	when(customerService.getCustomerById(anyLong())).thenReturn(customerDTO1);
 	
-	mockMvc.perform(get("/api/v1/customers/Pedro").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+	mockMvc.perform(get("/api/v1/customers/2").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 	.andExpect(jsonPath("$.firstName", equalTo(FIRST_NAME)));
     }
 
