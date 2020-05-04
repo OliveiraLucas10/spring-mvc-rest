@@ -1,6 +1,7 @@
 package com.oliveiralucaspro.springmvcrest.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +20,8 @@ import com.oliveiralucaspro.springmvcrest.domain.Customer;
 import com.oliveiralucaspro.springmvcrest.repositories.CustomerRepository;
 
 class CustomerServiceImplTest {
+
+    private static final String URL = "/api/v1/customers/1";
 
     private static final String LAST_NAME = "Favela";
 
@@ -68,4 +71,26 @@ class CustomerServiceImplTest {
 	assertEquals(LAST_NAME, customerByFirstName.getLastName());
     }
 
+    @Test
+    void testCreateNewCustomer() {
+	// given
+	Customer customer = new Customer();
+	customer.setId(ID);
+	customer.setFirstName(FIRST_NAME);
+	customer.setLastName(LAST_NAME);
+
+	CustomerDTO customerDTO = new CustomerDTO();
+	customerDTO.setFirstName(FIRST_NAME);
+	customerDTO.setLastName(LAST_NAME);
+	customerDTO.setCustomerUrl(URL);
+
+	when(customerRepository.save(any())).thenReturn(customer);
+	// when
+	// when
+	CustomerDTO savedDto = customerServiceImpl.createNewCustomer(customerDTO);
+
+	// then
+	assertEquals(customerDTO.getFirstName(), savedDto.getFirstName());
+	assertEquals(URL, savedDto.getCustomerUrl());
+    }
 }

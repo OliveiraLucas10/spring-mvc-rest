@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.oliveiralucaspro.springmvcrest.api.v1.mapper.CustomerMapper;
 import com.oliveiralucaspro.springmvcrest.api.v1.model.CustomerDTO;
+import com.oliveiralucaspro.springmvcrest.domain.Customer;
 import com.oliveiralucaspro.springmvcrest.repositories.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,15 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDTO getCustomerById(Long id) {
 	return customerRepository.findById(id).map(customerMapper::customerToCustomerDTO)
 		.orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
+	Customer customer = customerMapper.customerDTOToCustomer(customerDTO);
+	Customer customerSaved = customerRepository.save(customer);
+	CustomerDTO returnCustomerDTO = customerMapper.customerToCustomerDTO(customerSaved);
+	returnCustomerDTO.setCustomerUrl("/api/v1/customers/" + customerSaved.getId());
+	return returnCustomerDTO;
     }
 
 }
