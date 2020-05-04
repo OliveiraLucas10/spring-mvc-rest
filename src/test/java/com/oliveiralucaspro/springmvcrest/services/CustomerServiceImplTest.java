@@ -1,8 +1,8 @@
 package com.oliveiralucaspro.springmvcrest.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
