@@ -19,10 +19,11 @@ import com.oliveiralucaspro.springmvcrest.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/api/v1/customers")
+@RequestMapping(CustomerController.BASE_URL)
 @RequiredArgsConstructor
 public class CustomerController {
 
+    static final String BASE_URL = "/api/v1/customers";
     private final CustomerService customerService;
 
     @GetMapping
