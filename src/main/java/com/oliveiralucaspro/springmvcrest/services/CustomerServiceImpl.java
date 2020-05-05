@@ -1,6 +1,7 @@
 package com.oliveiralucaspro.springmvcrest.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
+    private static final String ROOT_URL = "/api/v1/customer/";
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
@@ -23,7 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerDTO> getAllCustomers() {
 	return customerRepository.findAll().stream().map(customer -> {
 	    CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
-	    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+	    customerDTO.setCustomerUrl(ROOT_URL + customer.getId());
 	    return customerDTO;
 	}).collect(Collectors.toList());
     }
@@ -36,10 +38,21 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
+	return saveAndReturnDTO(customerMapper.customerDTOToCustomer(customerDTO));
+    }
+
+    @Override
+    public CustomerDTO saveCustomerByDTO(Long id, CustomerDTO customerDTO) {
 	Customer customer = customerMapper.customerDTOToCustomer(customerDTO);
-	Customer customerSaved = customerRepository.save(customer);
-	CustomerDTO returnCustomerDTO = customerMapper.customerToCustomerDTO(customerSaved);
-	returnCustomerDTO.setCustomerUrl("/api/v1/customers/" + customerSaved.getId());
+	customer.setId(id);
+
+	return saveAndReturnDTO(customer);
+    }
+
+    private CustomerDTO saveAndReturnDTO(Customer customer) {
+	Customer savedCustomer = customerRepository.save(customer);
+	CustomerDTO returnCustomerDTO = customerMapper.customerToCustomerDTO(savedCustomer);
+	returnCustomerDTO.setCustomerUrl(ROOT_URL + savedCustomer.getId());
 	return returnCustomerDTO;
     }
 

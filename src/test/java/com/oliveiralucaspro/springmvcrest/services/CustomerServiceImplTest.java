@@ -21,7 +21,7 @@ import com.oliveiralucaspro.springmvcrest.repositories.CustomerRepository;
 
 class CustomerServiceImplTest {
 
-    private static final String URL = "/api/v1/customers/1";
+    private static final String URL = "/api/v1/customer/1";
 
     private static final String LAST_NAME = "Favela";
 
@@ -88,6 +88,28 @@ class CustomerServiceImplTest {
 	// when
 	// when
 	CustomerDTO savedDto = customerServiceImpl.createNewCustomer(customerDTO);
+
+	// then
+	assertEquals(customerDTO.getFirstName(), savedDto.getFirstName());
+	assertEquals(URL, savedDto.getCustomerUrl());
+    }
+
+    @Test
+    void saveCustomerByDTO() throws Exception {
+
+	// given
+	CustomerDTO customerDTO = new CustomerDTO();
+	customerDTO.setFirstName(FIRST_NAME);
+
+	Customer savedCustomer = new Customer();
+	savedCustomer.setFirstName(customerDTO.getFirstName());
+	savedCustomer.setLastName(customerDTO.getLastName());
+	savedCustomer.setId(ID);
+
+	when(customerRepository.save(any(Customer.class))).thenReturn(savedCustomer);
+
+	// when
+	CustomerDTO savedDto = customerServiceImpl.saveCustomerByDTO(1L, customerDTO);
 
 	// then
 	assertEquals(customerDTO.getFirstName(), savedDto.getFirstName());
