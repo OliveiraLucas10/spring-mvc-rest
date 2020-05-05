@@ -1,6 +1,8 @@
 package com.oliveiralucaspro.springmvcrest.controllers.v1;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,9 +22,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.oliveiralucaspro.springmvcrest.api.v1.model.VendorDTO;
 import com.oliveiralucaspro.springmvcrest.controllers.RestResponseEntityExceptionHandler;
+import com.oliveiralucaspro.springmvcrest.services.ResourceNotFoundException;
 import com.oliveiralucaspro.springmvcrest.services.VendorService;
 
 class VendorControllerTest {
+
+    private static final String NAME = "Name Test";
 
     @Mock
     VendorService vendorService;
@@ -49,6 +54,28 @@ class VendorControllerTest {
 	mockMvc.perform(get(VendorController.BASE_URL).contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk()).andExpect(jsonPath("$.vendors", hasSize(2)));
 
+    }
+
+    @Test
+    void testgetVendorById() throws Exception {
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	when(vendorService.getVendorById(anyLong())).thenReturn(vendorDTO);
+
+	mockMvc.perform(get(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk()).andExpect(jsonPath("$.name", equalTo(NAME)));
+    }
+
+    @Test
+    void testgetVendorByIdNotFound() throws Exception {
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	when(vendorService.getVendorById(anyLong())).thenThrow(ResourceNotFoundException.class);
+
+	mockMvc.perform(get(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
     }
 
 }
