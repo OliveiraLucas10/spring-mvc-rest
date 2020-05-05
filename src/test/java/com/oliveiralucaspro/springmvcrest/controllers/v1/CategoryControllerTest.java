@@ -21,7 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.oliveiralucaspro.springmvcrest.api.v1.model.CategoryDTO;
+import com.oliveiralucaspro.springmvcrest.controllers.RestResponseEntityExceptionHandler;
 import com.oliveiralucaspro.springmvcrest.services.CategoryService;
+import com.oliveiralucaspro.springmvcrest.services.ResourceNotFoundException;
 
 class CategoryControllerTest {
 
@@ -40,7 +42,8 @@ class CategoryControllerTest {
     void setUp() throws Exception {
 	MockitoAnnotations.initMocks(this);
 
-	mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
+	mockMvc = MockMvcBuilders.standaloneSetup(categoryController)
+		.setControllerAdvice(new RestResponseEntityExceptionHandler()).build();
     }
 
     @Test
@@ -57,8 +60,8 @@ class CategoryControllerTest {
 
 	when(categoryService.getAllCategories()).thenReturn(categories);
 
-	mockMvc.perform(get("/api/v1/categories/").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-		.andExpect(jsonPath("$.categories", hasSize(2)));
+	mockMvc.perform(get(CategoryController.BASE_URL).contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk()).andExpect(jsonPath("$.categories", hasSize(2)));
 
     }
 
@@ -70,9 +73,18 @@ class CategoryControllerTest {
 
 	when(categoryService.getCategoryByName(anyString())).thenReturn(categoryDTO1);
 
-	mockMvc.perform(get("/api/v1/categories/Jim").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-		.andExpect(jsonPath("$.name", equalTo(NAME)));
+	mockMvc.perform(get(CategoryController.BASE_URL + "/Jim").contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk()).andExpect(jsonPath("$.name", equalTo(NAME)));
 
+    }
+
+    @Test
+    void testGetByNameNotFound() throws Exception {
+
+	when(categoryService.getCategoryByName(anyString())).thenThrow(ResourceNotFoundException.class);
+
+	mockMvc.perform(get(CategoryController.BASE_URL + "/Foo").contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
     }
 
 }
