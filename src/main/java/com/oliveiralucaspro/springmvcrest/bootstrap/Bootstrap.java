@@ -5,8 +5,10 @@ import org.springframework.stereotype.Component;
 
 import com.oliveiralucaspro.springmvcrest.domain.Category;
 import com.oliveiralucaspro.springmvcrest.domain.Customer;
+import com.oliveiralucaspro.springmvcrest.domain.Vendor;
 import com.oliveiralucaspro.springmvcrest.repositories.CategoryRepository;
 import com.oliveiralucaspro.springmvcrest.repositories.CustomerRepository;
+import com.oliveiralucaspro.springmvcrest.repositories.VendorRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,11 +18,13 @@ public class Bootstrap implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
     private final CustomerRepository customerRepository;
+    private final VendorRepository vendorRepository;
 
     @Override
     public void run(String... args) throws Exception {
 	loadCategory();
 	loadCustomer();
+	loadVendor();
     }
 
     private void loadCategory() {
@@ -61,5 +65,22 @@ public class Bootstrap implements CommandLineRunner {
 	customerRepository.save(sergio);
 
 	System.out.println("Customer Loaded = " + customerRepository.count());
+    }
+
+    private void loadVendor() {
+	Vendor western = new Vendor();
+	western.setName("Western Tasty Fruits Ltd.");
+
+	Vendor exotic = new Vendor();
+	exotic.setName("Exotic Fruits Company");
+
+	Vendor home = new Vendor();
+	home.setName("Home Fruits");
+
+	vendorRepository.save(western);
+	vendorRepository.save(exotic);
+	vendorRepository.save(home);
+
+	System.out.println("Vendor Loaded = " + vendorRepository.count());
     }
 }
