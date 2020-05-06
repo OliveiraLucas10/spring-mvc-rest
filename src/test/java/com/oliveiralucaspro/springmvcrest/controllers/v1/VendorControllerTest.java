@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -121,6 +122,33 @@ class VendorControllerTest extends AbstractRestControllerTest {
 	when(vendorService.saveVendorById(anyLong(), any(VendorDTO.class))).thenThrow(ResourceNotFoundException.class);
 
 	mockMvc.perform(put(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON)
+		.content(asJsonString(vendorDTO))).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testPatchVendor() throws Exception {
+	VendorDTO input = new VendorDTO();
+	input.setName(NAME);
+
+	VendorDTO returned = new VendorDTO();
+	returned.setName(input.getName());
+	returned.setVendorUrl(VENDOR_URL);
+
+	when(vendorService.patchVendor(anyLong(), any(VendorDTO.class))).thenReturn(returned);
+
+	mockMvc.perform(patch(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON)
+		.content(asJsonString(input))).andExpect(status().isOk()).andExpect(jsonPath("$.name", equalTo(NAME)))
+		.andExpect(jsonPath("$.vendor_url", equalTo(VENDOR_URL)));
+    }
+
+    @Test
+    void testPatchVendorNotFound() throws Exception {
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	when(vendorService.patchVendor(anyLong(), any(VendorDTO.class))).thenThrow(ResourceNotFoundException.class);
+
+	mockMvc.perform(patch(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON)
 		.content(asJsonString(vendorDTO))).andExpect(status().isNotFound());
     }
 

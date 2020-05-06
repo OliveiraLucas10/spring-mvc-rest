@@ -2,6 +2,7 @@ package com.oliveiralucaspro.springmvcrest.controllers.v1;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,5 +48,11 @@ public class VendorController {
     @ResponseStatus(HttpStatus.OK)
     public VendorDTO saveVendorById(@PathVariable Long id, @RequestBody VendorDTO vendorDTO) {
 	return vendorService.saveVendorById(id, vendorDTO);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public VendorDTO patchVendor(@PathVariable Long id, @RequestBody VendorDTO vendorDTO) {
+	return vendorService.patchVendor(id, vendorDTO);
     }
 }

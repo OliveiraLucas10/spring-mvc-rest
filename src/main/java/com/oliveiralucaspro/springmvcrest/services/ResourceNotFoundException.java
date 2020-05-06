@@ -2,6 +2,8 @@ package com.oliveiralucaspro.springmvcrest.services;
 
 public class ResourceNotFoundException extends RuntimeException {
 
+    private static final long serialVersionUID = -2439550313084881990L;
+
     public ResourceNotFoundException() {
     }
 
