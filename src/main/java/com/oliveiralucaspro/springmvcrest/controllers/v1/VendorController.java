@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class VendorController {
 
-    static final String BASE_URL = "/api/v1/vendor";
+    public static final String BASE_URL = "/api/v1/vendors";
 
     private final VendorService vendorService;
 
