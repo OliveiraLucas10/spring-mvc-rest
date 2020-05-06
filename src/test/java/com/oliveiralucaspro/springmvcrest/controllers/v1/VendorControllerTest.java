@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,7 +59,6 @@ class VendorControllerTest extends AbstractRestControllerTest {
 
 	mockMvc.perform(get(VendorController.BASE_URL).contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk()).andExpect(jsonPath("$.vendors", hasSize(2)));
-
     }
 
     @Test
@@ -74,9 +74,6 @@ class VendorControllerTest extends AbstractRestControllerTest {
 
     @Test
     void testgetVendorByIdNotFound() throws Exception {
-	VendorDTO vendorDTO = new VendorDTO();
-	vendorDTO.setName(NAME);
-
 	when(vendorService.getVendorById(anyLong())).thenThrow(ResourceNotFoundException.class);
 
 	mockMvc.perform(get(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON))
@@ -97,6 +94,34 @@ class VendorControllerTest extends AbstractRestControllerTest {
 	mockMvc.perform(post(VendorController.BASE_URL).contentType(MediaType.APPLICATION_JSON)
 		.content(asJsonString(vendorDTO))).andExpect(status().isCreated())
 		.andExpect(jsonPath("$.name", equalTo(NAME))).andExpect(jsonPath("$.vendor_url", equalTo(VENDOR_URL)));
+    }
+
+    @Test
+    void testSaveVendorById() throws Exception {
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	VendorDTO returnedVendorDTO = new VendorDTO();
+	returnedVendorDTO.setName(vendorDTO.getName());
+	returnedVendorDTO.setVendorUrl(VENDOR_URL);
+
+	when(vendorService.saveVendorById(anyLong(), any(VendorDTO.class))).thenReturn(returnedVendorDTO);
+
+	mockMvc.perform(put(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON)
+		.content(asJsonString(vendorDTO))).andExpect(status().isOk())
+		.andExpect(jsonPath("$.name", equalTo(NAME))).andExpect(jsonPath("$.vendor_url", equalTo(VENDOR_URL)));
+
+    }
+
+    @Test
+    void testSaveVendorByIdNotFound() throws Exception {
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	when(vendorService.saveVendorById(anyLong(), any(VendorDTO.class))).thenThrow(ResourceNotFoundException.class);
+
+	mockMvc.perform(put(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON)
+		.content(asJsonString(vendorDTO))).andExpect(status().isNotFound());
     }
 
 }
