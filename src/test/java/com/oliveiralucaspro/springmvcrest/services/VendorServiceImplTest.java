@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.oliveiralucaspro.springmvcrest.api.v1.mapper.VendorMapper;
 import com.oliveiralucaspro.springmvcrest.api.v1.model.VendorDTO;
+import com.oliveiralucaspro.springmvcrest.controllers.v1.VendorController;
 import com.oliveiralucaspro.springmvcrest.domain.Vendor;
 import com.oliveiralucaspro.springmvcrest.repositories.VendorRepository;
 
@@ -27,6 +28,8 @@ class VendorServiceImplTest {
     private static final Long ID = 1L;
 
     private static final String NAME = "Name Test";
+
+    private static final String URL = VendorController.BASE_URL + "/" + ID;
 
     @Mock
     VendorRepository vendorRepository;
@@ -100,4 +103,41 @@ class VendorServiceImplTest {
 
     }
 
+    @Test
+    void testSaveVendorById() {
+	// given
+	Vendor vendor = new Vendor();
+	vendor.setId(ID);
+	vendor.setName(NAME);
+
+	Vendor savedVendor = new Vendor();
+	savedVendor.setId(ID);
+	savedVendor.setName(NAME + "2");
+
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME + "2");
+
+	when(vendorRepository.findById(anyLong())).thenReturn(Optional.of(vendor));
+	when(vendorRepository.save(any())).thenReturn(savedVendor);
+	// when
+	VendorDTO returnedVendorDTO = service.saveVendorById(ID, vendorDTO);
+
+	// than
+	assertEquals(savedVendor.getName(), returnedVendorDTO.getName());
+	assertEquals(URL, returnedVendorDTO.getVendorUrl());
+	verify(vendorRepository).findById(anyLong());
+	verify(vendorRepository).save(any(Vendor.class));
+
+    }
+
+    @Test
+    void testSaveVendorByIdNotFound() {
+	// given
+
+	when(vendorRepository.findById(anyLong())).thenReturn(Optional.empty());
+	// when
+
+	// then
+	Assertions.assertThrows(ResourceNotFoundException.class, () -> service.saveVendorById(ID, new VendorDTO()));
+    }
 }

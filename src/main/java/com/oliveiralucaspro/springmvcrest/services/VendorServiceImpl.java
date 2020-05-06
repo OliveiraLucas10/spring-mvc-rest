@@ -43,4 +43,13 @@ public class VendorServiceImpl implements VendorService {
 	return getVendorDTOWithURL(vendorRepository.save(vendorMapper.vendorDTOToVendor(vendorDTO)));
     }
 
+    @Override
+    public VendorDTO saveVendorById(Long id, VendorDTO vendorDTO) {
+	return vendorRepository.findById(id).map(vendor -> {
+	    Vendor updatedVendor = vendorMapper.vendorDTOToVendor(vendorDTO);
+	    updatedVendor.setId(vendor.getId());
+	    return getVendorDTOWithURL(vendorRepository.save(updatedVendor));
+	}).orElseThrow(ResourceNotFoundException::new);
+    }
+
 }
