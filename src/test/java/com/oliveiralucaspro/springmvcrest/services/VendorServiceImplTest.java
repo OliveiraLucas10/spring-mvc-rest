@@ -168,7 +168,7 @@ class VendorServiceImplTest {
 	verify(vendorRepository).save(any(Vendor.class));
 
     }
-    
+
     @Test
     void testPatchVendorNullName() {
 	// given
@@ -196,7 +196,7 @@ class VendorServiceImplTest {
 	verify(vendorRepository).save(any(Vendor.class));
 
     }
-    
+
     @Test
     void testPatchVendorNotFound() {
 	// given
@@ -206,6 +206,17 @@ class VendorServiceImplTest {
 
 	// then
 	Assertions.assertThrows(ResourceNotFoundException.class, () -> service.patchVendor(ID, new VendorDTO()));
+    }
+
+    @Test
+    void testDeleteVendor() {
+	service.deleteVendor(ID);
+	verify(vendorRepository).deleteById(anyLong());
+    }
+
+    @Test
+    void testDeleteVendorNotFound() {
+	Assertions.assertThrows(ResourceNotFoundException.class, () -> service.deleteVendor(null));
     }
 
 }

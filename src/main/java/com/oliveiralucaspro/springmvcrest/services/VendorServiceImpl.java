@@ -63,4 +63,14 @@ public class VendorServiceImpl implements VendorService {
 	}).orElseThrow(ResourceNotFoundException::new);
     }
 
+    @Override
+    public void deleteVendor(Long id) {
+	if (!Objects.isNull(id)) {
+	    vendorRepository.deleteById(id);
+	} else {
+	    throw new ResourceNotFoundException();
+	}
+
+    }
+
 }
