@@ -1,7 +1,10 @@
 package com.oliveiralucaspro.springmvcrest.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -74,6 +77,27 @@ class VendorServiceImplTest {
 
 	// then
 	Assertions.assertThrows(ResourceNotFoundException.class, () -> service.getVendorById(ID));
+    }
+
+    @Test
+    void testCreateNewVendor() {
+	// given
+	Vendor vendor = new Vendor();
+	vendor.setId(ID);
+	vendor.setName(NAME);
+
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	when(vendorRepository.save(any())).thenReturn(vendor);
+	// when
+	VendorDTO returnedDTO = service.createNewVendor(vendorDTO);
+
+	// than
+	assertEquals(vendor.getName(), returnedDTO.getName());
+	assertEquals(String.format(VendorServiceImpl.ROOT_URL, vendor.getId()), returnedDTO.getVendorUrl());
+	verify(vendorRepository, times(1)).save(any());
+
     }
 
 }

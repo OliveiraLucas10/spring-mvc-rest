@@ -2,9 +2,11 @@ package com.oliveiralucaspro.springmvcrest.controllers.v1;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,8 +26,11 @@ import com.oliveiralucaspro.springmvcrest.api.v1.model.VendorDTO;
 import com.oliveiralucaspro.springmvcrest.controllers.RestResponseEntityExceptionHandler;
 import com.oliveiralucaspro.springmvcrest.services.ResourceNotFoundException;
 import com.oliveiralucaspro.springmvcrest.services.VendorService;
+import com.oliveiralucaspro.springmvcrest.services.VendorServiceImpl;
 
-class VendorControllerTest {
+class VendorControllerTest extends AbstractRestControllerTest {
+
+    private static final String VENDOR_URL = VendorServiceImpl.ROOT_URL + "/1";
 
     private static final String NAME = "Name Test";
 
@@ -76,6 +81,22 @@ class VendorControllerTest {
 
 	mockMvc.perform(get(VendorController.BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateNewVendor() throws Exception {
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	VendorDTO returnedVendorDTO = new VendorDTO();
+	returnedVendorDTO.setName(vendorDTO.getName());
+	returnedVendorDTO.setVendorUrl(VENDOR_URL);
+
+	when(vendorService.createNewVendor(any())).thenReturn(returnedVendorDTO);
+
+	mockMvc.perform(post(VendorController.BASE_URL).contentType(MediaType.APPLICATION_JSON)
+		.content(asJsonString(vendorDTO))).andExpect(status().isCreated())
+		.andExpect(jsonPath("$.name", equalTo(NAME))).andExpect(jsonPath("$.vendor_url", equalTo(VENDOR_URL)));
     }
 
 }

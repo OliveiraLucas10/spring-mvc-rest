@@ -20,7 +20,7 @@ public class VendorServiceImpl implements VendorService {
     private final VendorRepository vendorRepository;
     private final VendorMapper vendorMapper;
 
-    private static final String ROOT_URL = VendorController.BASE_URL + "/%s";
+    public static final String ROOT_URL = VendorController.BASE_URL + "/%s";
 
     @Override
     public List<VendorDTO> getAllVendors() {
@@ -36,6 +36,11 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorDTO getVendorById(Long id) {
 	return vendorRepository.findById(id).map(this::getVendorDTOWithURL).orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Override
+    public VendorDTO createNewVendor(VendorDTO vendorDTO) {
+	return getVendorDTOWithURL(vendorRepository.save(vendorMapper.vendorDTOToVendor(vendorDTO)));
     }
 
 }
