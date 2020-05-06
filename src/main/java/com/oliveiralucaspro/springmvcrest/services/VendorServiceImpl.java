@@ -1,6 +1,7 @@
 package com.oliveiralucaspro.springmvcrest.services;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -49,6 +50,16 @@ public class VendorServiceImpl implements VendorService {
 	    Vendor updatedVendor = vendorMapper.vendorDTOToVendor(vendorDTO);
 	    updatedVendor.setId(vendor.getId());
 	    return getVendorDTOWithURL(vendorRepository.save(updatedVendor));
+	}).orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Override
+    public VendorDTO patchVendor(Long id, VendorDTO vendorDTO) {
+	return vendorRepository.findById(id).map(vendor -> {
+	    if (!Objects.isNull(vendorDTO.getName())) {
+		vendor.setName(vendorDTO.getName());
+	    }
+	    return getVendorDTOWithURL(vendorRepository.save(vendor));
 	}).orElseThrow(ResourceNotFoundException::new);
     }
 

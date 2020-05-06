@@ -140,4 +140,72 @@ class VendorServiceImplTest {
 	// then
 	Assertions.assertThrows(ResourceNotFoundException.class, () -> service.saveVendorById(ID, new VendorDTO()));
     }
+
+    @Test
+    void testPatchVendor() {
+	// given
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(NAME);
+
+	Vendor findById = new Vendor();
+	findById.setId(ID);
+	findById.setName("findById");
+
+	Vendor saved = new Vendor();
+	saved.setId(findById.getId());
+	saved.setName(vendorDTO.getName());
+
+	when(vendorRepository.findById(anyLong())).thenReturn(Optional.of(findById));
+	when(vendorRepository.save(any(Vendor.class))).thenReturn(saved);
+
+	// when
+	VendorDTO returned = service.patchVendor(ID, vendorDTO);
+
+	// than
+	assertEquals(saved.getName(), returned.getName());
+	assertEquals(URL, returned.getVendorUrl());
+	verify(vendorRepository).findById(anyLong());
+	verify(vendorRepository).save(any(Vendor.class));
+
+    }
+    
+    @Test
+    void testPatchVendorNullName() {
+	// given
+	VendorDTO vendorDTO = new VendorDTO();
+	vendorDTO.setName(null);
+
+	Vendor findById = new Vendor();
+	findById.setId(ID);
+	findById.setName("findById");
+
+	Vendor saved = new Vendor();
+	saved.setId(findById.getId());
+	saved.setName(findById.getName());
+
+	when(vendorRepository.findById(anyLong())).thenReturn(Optional.of(findById));
+	when(vendorRepository.save(any(Vendor.class))).thenReturn(saved);
+
+	// when
+	VendorDTO returned = service.patchVendor(ID, vendorDTO);
+
+	// than
+	assertEquals(findById.getName(), returned.getName());
+	assertEquals(URL, returned.getVendorUrl());
+	verify(vendorRepository).findById(anyLong());
+	verify(vendorRepository).save(any(Vendor.class));
+
+    }
+    
+    @Test
+    void testPatchVendorNotFound() {
+	// given
+
+	when(vendorRepository.findById(anyLong())).thenReturn(Optional.empty());
+	// when
+
+	// then
+	Assertions.assertThrows(ResourceNotFoundException.class, () -> service.patchVendor(ID, new VendorDTO()));
+    }
+
 }
